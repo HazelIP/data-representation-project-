@@ -16,11 +16,14 @@ class EmployeesDAO:
         password="hazel",
         database="employees2"    
     )
-    def create(self,values):
+    def create(self,person):
         cursor=self.db.cursor()
         #do insert
-        sql="insert into employees (id, name) values (%d, %s)"
-        values = (1, john)
+        sql="insert into employees (id, name) values (%s, %s)"
+        values = [
+            person["id"],
+            person['name']
+        ]
         cursor.execute(sql, values)
 
         self.db.commit()
@@ -32,9 +35,23 @@ class EmployeesDAO:
         #command
         sql="select * from employees"
         cursor.execute(sql)
-        result=cursor.fetchall()
-        for x in result:
-            print(x) #need to jsonify it
+        results=cursor.fetchall()
+        returnArray = []
+        print (results)
+        for result in results:
+            returnAsDict = self.convertToDict(result)
+            returnArray.append(returnAsDict)
+        return returnArray       
+
+    def converToDict(self,result):
+        colnames=['id','name']
+        person ={}
+
+        if result:
+            for i, colname in result:
+                value = result[i]
+                person[colname]
+        return person
 
     # get by id
     # update
