@@ -1,6 +1,6 @@
 from Employee_DAO import employeesDAO
 
-book = {
+employee = {
     "id":1,
     "name":john
 }

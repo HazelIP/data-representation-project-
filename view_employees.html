@@ -2,191 +2,291 @@
  <html>
     <head>
         <title> View Employees</title>
-        <script src=""></script>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="mystyle.css">
+        <style>
+            /*color theme: https://www.canva.com/learn/website-color-schemes/
+        #49 sunny and calm (#CAE4DB, #DCAE1D, #00303F, #7A9D96, #D7DD35, #F2D388)*/
+            body {
+                background-color: #F2D388;
+                color:#00303F;}
+            h1{
+                color: #00303F; 
+                text-align: center;}
+            .fieldset-auto-width {
+                display: inline-block; 
+                align-items: center;}
+            legend {
+		        font-size:35px;
+		        text-align: center;
+		        padding: 10px;}
+            </style>
     </head>
     <body>
-        <h1>Employees</h1>
+        <fieldset class="fieldset-auto-width">
+            <legend><h1>Employees</h1></legend>
         <div> <button id="showCreateButton" onclick="showCreate()">Create new employee</button></div>
+        <br>
+        <div> <button id="showUpdateButton" onclick="showUpdate()">Update employee</button></div>
+        </fieldset>
         <div>
-            <table class="table" id="employeeTable">
-                <tr>
-                        <th>Employee ID</th>
-                        <th>First name</th>
-                        <th>Last name</th>
-                        <th>Gender</th>
-                        <th>Department ID</th>
-                        <th>Start date</th>
-                        <!--<th>Department ID</th>
-                        <th>Department name</th>-->
-                        
-                </tr>    
+            <table class="table" id="employeeTable">  
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
             </table>
         </div>
 
         <div id='createUpdateForm' style="display: none">
-                <h2><span id="createLabel">Create a</span> <span id="updateLabel">update</span> Employee</h2>
-                Employee ID <input type="number" name="id"/> <br/>
+                <h2><span id="createLabel">Create an</span> <span id="updateLabel">Update</span> Employee</h2>
+                Employee ID <input type="number" name="eid"/> <br/>
+                <br>
                 First name <input type="text" name="fname"/> <br/>
+                <br>
                 Last name <input type="text" name="lname"/> <br/>
-                <select name="gender">
+                <br>
+                Gender <select name="gender">
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                 </select> <br/>
-                 <select name="dept">
-                        <option value="sales">Sales</option>
-                        <option value="marketing">Marketing</option>
-                        <option value=""></option>
-                        <option value=""></option>
+                <br>
+                Department code <select name="dcode">
+                        <option value="101s">101-Sales</option>
+                        <option value="102hr">102-Human Resources</option>
+                        <option value="103rd">103-Research & Development</option>
+                        <option value="104it">104-IT</option>
                 </select> <br/>
+                <br>
                 Start date <input type="date" name="startdate"/> <br/>
+                <br>
                 <span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
                 <span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
         </div>
+        
     </body>
     <script>
-    function showCreate(){
-        document.getElementById('showCreateButton').style.display="none"
-        document.getElementById('employeeTable').style.display="none"
-        document.getElementById('createUpdateForm').style.display="block"
+     function showCreate(){
+         document.getElementById('showCreateButton').style.display="none"
+         document.getElementById('employeeTable').style.display="none"
+         document.getElementById('createUpdateForm').style.display="block"
 
-        document.getElementById('createLabel').style.display="inline"
-        document.getElementById('updateLabel').style.display="none"
+         document.getElementById('createLabel').style.display="inline"
+         document.getElementById('updateLabel').style.display="none"
 
-        document.getElementById('doCreateButton').style.display="block"
-        document.getElementById('doUpdateButton').style.display="none"
+         document.getElementById('doCreateButton').style.display="block"
+         document.getElementById('doUpdateButton').style.display="none"
 
-    }
-    function showViewAll(){
-        document.getElementById('showCreateButton').style.display="block"
-        document.getElementById('employeeTable').style.display="block"
-        document.getElementById('createUpdateForm').style.display="none"
-    }
-    function showUpdate(buttonElement){
-        document.getElementById('showCreateButton').style.display="none"
-        document.getElementById('employeeTable').style.display="none"
-        document.getElementById('createUpdateForm').style.display="block"
+     }
+     function showViewAll(){
+         document.getElementById('showCreateButton').style.display="block"
+         document.getElementById('employeeTable').style.display="block"
+         document.getElementById('createUpdateForm').style.display="none"
+     }
+     function showUpdate(buttonElement){
+         document.getElementById('showCreateButton').style.display="none"
+         document.getElementById('employeeTable').style.display="none"
+         document.getElementById('createUpdateForm').style.display="block"
 
-        document.getElementById('createLabel').style.display="none"
-        document.getElementById('updateLabel').style.display="inline"
+         document.getElementById('createLabel').style.display="none"
+         document.getElementById('updateLabel').style.display="inline"
 
-        document.getElementById('doCreateButton').style.display="none"
-        document.getElementById('doUpdateButton').style.display="block"
+         document.getElementById('doCreateButton').style.display="none"
+         document.getElementById('doUpdateButton').style.display="block"
 
 
-        var rowElement = buttonElement.parentNode.parentNode
-        // these is a way of finding the closest <tr> which would safer, closest()
+         var rowElement = buttonElement.parentNode.parentNode
+         // these is a way of finding the closest <tr> which would safer, closest()
+         
+         var employee = getEmployeeFromRow(rowElement)
+         populateFormWithEmployee(employee)
+     }
+     function doCreate(){
+         var form = document.getElementById('createUpdateForm')
+
+         var employee = {}
+         employee.id = form.querySelector('input[name="id"]').value
+         employee.fname = form.querySelector('select[name="fname"]').value
+         employee.lname = form.querySelector('input[name="lname"]').value
+         employee.gender = form.querySelector('input[name="gender"]').value
+         employee.dept = form.querySelector('input[name="dept"]').value
+         employee.startdate = form.querySelector('input[name="startdate"]').value
+         console.log(JSON.stringify(employee))
+
+         addEmployeeToTable(employee)
+         clearForm()
+         
+         showViewAll()
+     }
+     function doUpdate(){
+         var employee = getEmployeeFromForm();
+         var rowElement = document.getElementById(employee.id)
+         setEmployeeInRow(rowElement,employee)
         
-        var employee = getEmployeeFromRow(rowElement)
-        populateFormWithEmployee(employee)
-    }
-    function doCreate(){
-        var form = document.getElementById('createUpdateForm')
+         clearForm()
+         showViewAll()
+     }
+     function doDelete(r){
+         var tableElement = document.getElementById('employeeTable')
+         var rowElement = r.parentNode.parentNode;
+         var index = rowElement.rowIndex;
+         deleteBookAjax(rowElement.getAttribute("id"));
+         tableElement.deleteRow(index);
+     }
+     function addEmployeeToTable(employee){
+         var tableElement = document.getElementById('employeeTable')
+         var rowElement = tableElement.insertRow(-1)
+         rowElement.setAttribute('id',employee.id)
+         var cell1 = rowElement.insertCell(0);
+         cell1.innerHTML = employee.id
+         var cell2 = rowElement.insertCell(1);
+         cell2.innerHTML = employee.fname
+         var cell3 = rowElement.insertCell(2);
+         cell3.innerHTML = employee.lname
+         var cell4 = rowElement.insertCell(3);
+         cell4.innerHTML = employee.gender
+         var cell5 = rowElement.insertCell(4);
+         cell5.innerHTML = employee.dept
+         var cell6 = rowElement.insertCell(5);
+         cell6.innerHTML = employee.startdate
+         var cell7 = rowElement.insertCell(6);
+         cell7.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
+         var cell8 = rowElement.insertCell(7);
+         cell8.innerHTML = '<button onclick=doDelete(this)>delete</button>'
 
-        var employee = {}
-        employee.id = form.querySelector('input[name="id"]').value
-        employee.fname = form.querySelector('select[name="fname"]').value
-        employee.lname = form.querySelector('input[name="lname"]').value
-        employee.gender = form.querySelector('input[name="gender"]').value
-        employee.dept = form.querySelector('input[name="dept"]').value
-        employee.startdate = form.querySelector('input[name="startdate"]').value
-        console.log(JSON.stringify(employee))
+     }
 
-        addEmployeeToTable(employee)
-        clearForm()
-        
-        showViewAll()
-    }
-    function doUpdate(){
-        var employee = getEmployeeFromForm();
-        var rowElement = document.getElementById(employee.id)
-        setEmployeeInRow(rowElement,employee)
-       
-        clearForm()
-        showViewAll()
-    }
-    function doDelete(r){
-        var tableElement = document.getElementById('employeeTable')
-        var rowElement = r.parentNode.parentNode;
-        var index = rowElement.rowIndex;
-        deleteBookAjax(rowElement.getAttribute("id"));
-        tableElement.deleteRow(index);
-    }
-    function addEmployeeToTable(employee){
-        var tableElement = document.getElementById('employeeTable')
-        var rowElement = tableElement.insertRow(-1)
-        rowElement.setAttribute('id',employee.id)
-        var cell1 = rowElement.insertCell(0);
-        cell1.innerHTML = employee.id
-        var cell2 = rowElement.insertCell(1);
-        cell2.innerHTML = employee.fname
-        var cell3 = rowElement.insertCell(2);
-        cell3.innerHTML = employee.lname
-        var cell4 = rowElement.insertCell(3);
-        cell4.innerHTML = employee.gender
-        var cell5 = rowElement.insertCell(4);
-        cell5.innerHTML = employee.dept
-        var cell6 = rowElement.insertCell(5);
-        cell6.innerHTML = employee.startdate
-        var cell7 = rowElement.insertCell(6);
-        cell7.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
-        var cell8 = rowElement.insertCell(7);
-        cell8.innerHTML = '<button onclick=doDelete(this)>delete</button>'
+     function clearForm(){
+         var form = document.getElementById('createUpdateForm')
 
-    }
+         form.querySelector('input[name="id"]').disabled = false
+         form.querySelector('input[name="fname"]').value  =''
+         form.querySelector('input[name="lname"]').value=''
+         form.querySelector('select[name="gender"]').value=''
+         form.querySelector('select[name="dept"]').value=''
+         form.querySelector('input[name="startdate"]').value=''
+     }
+     function getEmployeeFromRow(rowElement){
+         var employee ={}
+         employee.id  = rowElement.getAttribute('id')
+         employee.fname = rowElement.cells[1].firstChild.textContent
+         employee.lname = rowElement.cells[2].firstChild.textContent
+         employee.gender = rowElement.cells[3].firstChild.textContent //select
+         employee.dept  = rowElement.cells[4].firstChild.textContent  //select
+         employee.startdate  = rowElement.cells[5].firstChild.textContent //date
+         return employee
+     }
+     function setEmployeeInRow(rowElement, employee){
+         rowElement.cells[0].firstChild.textContent= employee.id 
+         rowElement.cells[1].firstChild.textContent= employee.fname
+         rowElement.cells[2].firstChild.textContent= employee.lname
+         rowElement.cells[3].firstChild.textContent= employee.gender
+         rowElement.cells[4].firstChild.textContent= employee.dept
+         rowElement.cells[5].firstChild.textContent= employee.startdate
+     }
+     function populateFormWithEmployee(employee){
+         var form = document.getElementById('createUpdateForm')
+         form.querySelector('input[name="id"]').disabled = true
 
-    function clearForm(){
-        var form = document.getElementById('createUpdateForm')
+         form.querySelector('input[name="id"]').value  = employee.id
+         form.querySelector('input[name="fname"]').value= employee.fname
+         form.querySelector('input[name="lname"]').value= employee.lname
+         form.querySelector('select[name="gender"]').value= employee.gender
+         form.querySelector('select[name="dept"]').value= employee.dept
+         form.querySelector('input[name="startdate"]').value= employee.startdate
+         return employee
+     }
+     function getEmployeeFromForm(){
+         var form = document.getElementById('createUpdateForm')
+         var employee = {}
+         employee.id = form.querySelector('input[name="id"]').value
+         employee.fname = form.querySelector('input[name="fname"]').value
+         employee.lname = form.querySelector('input[name="lname"]').value
+         employee.gender = form.querySelector('select[name="gender"]').value
+         employee.dept = form.querySelector('select[name="dept"]').value
+         employee.startdate = form.querySelector('input[name="startdate"]').value
+         console.log(JSON.stringify(employee))
+         return employee
+     }
+     //AJAX part
+     function getAllAjax(){
+         $.ajax({
+             "url": "http://127.0.0.1:5000/employee",
+             "method":"GET",
+             "data":"",
+             "dataType": "JSON",
+             "success":function(result){
+                 //console.log(result);
+                 for (employee of result){
+                     addEmployeeToTable(employee);
+                 }
+                 
+             },
+             "error":function(xhr,status,error){
+                 console.log("error: "+status+" msg:"+error);
+             }
+         });
 
-        form.querySelector('input[name="id"]').disabled = false
-        form.querySelector('input[name="fname"]').value  =''
-        form.querySelector('input[name="lname"]').value=''
-        form.querySelector('select[name="gender"]').value=''
-        form.querySelector('select[name="dept"]').value=''
-        form.querySelector('input[name="startdate"]').value=''
-    }
-    function getEmployeeFromRow(rowElement){
-        var employee ={}
-        employee.id  = rowElement.getAttribute('id')
-        employee.fname = rowElement.cells[1].firstChild.textContent
-        employee.lname = rowElement.cells[2].firstChild.textContent
-        employee.gender = rowElement.cells[3].firstChild.textContent //select
-        employee.dept  = rowElement.cells[4].firstChild.textContent  //select
-        employee.startdate  = rowElement.cells[5].firstChild.textContent //date
-        return employee
-    }
-    function setEmployeeInRow(rowElement, employee){
-        rowElement.cells[0].firstChild.textContent= employee.id 
-        rowElement.cells[1].firstChild.textContent= employee.fname
-        rowElement.cells[2].firstChild.textContent= employee.lname
-        rowElement.cells[3].firstChild.textContent= employee.gender
-        rowElement.cells[4].firstChild.textContent= employee.dept
-        rowElement.cells[5].firstChild.textContent= employee.startdate
-    }
-    function populateFormWithEmployee(employee){
-        var form = document.getElementById('createUpdateForm')
-        form.querySelector('input[name="id"]').disabled = true
-
-        form.querySelector('input[name="id"]').value  = employee.id
-        form.querySelector('input[name="fname"]').value= employee.fname
-        form.querySelector('input[name="lname"]').value= employee.lname
-        form.querySelector('select[name="gender"]').value= employee.gender
-        form.querySelector('select[name="dept"]').value= employee.dept
-        form.querySelector('input[name="startdate"]').value= employee.startdate
-        return employee
-    }
-    function getEmployeeFromForm(){
-        var form = document.getElementById('createUpdateForm')
-        var employee = {}
-        employee.id = form.querySelector('input[name="id"]').value
-        employee.fname = form.querySelector('input[name="fname"]').value
-        employee.lname = form.querySelector('input[name="lname"]').value
-        employee.gender = form.querySelector('select[name="gender"]').value
-        employee.dept = form.querySelector('select[name="dept"]').value
-        employee.startdate = form.querySelector('input[name="startdate"]').value
-        console.log(JSON.stringify(employee))
-        return employee
-    }
-    //AJAX part
-    </script>
+     }
+     function createEmployeeAjax(employee){
+         //var car = {"reg":"12 D 1234","make":"Fiat","model":"Punto","price":3000}
+         console.log(JSON.stringify(employee));
+         $.ajax({
+             "url": "http://127.0.0.1:5000/employee",
+             "method":"POST",
+             "data":JSON.stringify(employee),
+             "dataType": "JSON",
+             contentType: "application/json; charset=utf-8",
+             "success":function(result){
+                 //console.log(result);
+                 employee.id = result.id
+                 addEmployeeToTable(employee)
+                 clearForm()
+                 showViewAll()
+             },
+             "error":function(xhr,status,error){
+                 console.log("error: "+status+" msg:"+error);
+             }
+         });
+     }
+     function updateEmployeeAjax(employee){
+         //var car = {"reg":"12 D 1234","price":8000}
+         console.log(JSON.stringify(employee));
+         $.ajax({
+             "url": "http://127.0.0.1:5000/employee/"+encodeURI(employee.id),
+             "method":"PUT",
+             "data":JSON.stringify(employee),
+             "dataType": "JSON",
+             contentType: "application/json; charset=utf-8",
+             "success":function(result){
+                // console.log(result);
+                   
+             },
+             "error":function(xhr,status,error){
+                 console.log("error: "+status+" msg:"+error);
+             }
+         });
+     }
+     function deleteEmployeeAjax(id){
+         
+         //console.log(JSON.stringify('deleting '+id));
+         $.ajax({
+             "url": "http://127.0.0.1:5000/employee/"+encodeURI(id),
+             "method":"DELETE",
+             "data":"",
+             "dataType": "JSON",
+             contentType: "application/json; charset=utf-8",
+             "success":function(result){
+                 //console.log(result);
+                   
+             },
+             "error":function(xhr,status,error){
+                 console.log("error: "+status+" msg:"+error);
+             }
+         });
+     }
+     getAllAjax();
+     </script>
 </html>
