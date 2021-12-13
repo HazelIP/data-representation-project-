@@ -1,32 +1,52 @@
 # This is the server
 #!flask/bin/python
 
-from flask import Flask, jsonify,  request, abort, make_response
+from flask import Flask, json, jsonify,  request, redirect, url_for, abort, make_response
 
-from Employee_DAO import EmployeesDAO
+from Employee_DAO import employeeDAO
 
 app = Flask(__name__,
             static_url_path='', 
             static_folder='../')
 
+# hard-code some data to test
+
+
+
+
 # get all
 @app.route('/')
 # login page?
 def index():
-    return "Hello!"
+    return redirect (url_for('login'))
+    #return "Hello!"
 
-# CRUD
+@app.route('/login')
+def login():
+    #return "served by login"
+    abort(401)
+    #this_is_never_executed() #function not defined
+
+
+# CRUD - get all
 @app.route('/employee')
 def get_all():
+    return jsonify(employee) #display the data, where's the data?
     return "served by get all()"
 
-@app.route('/employee/<int:id>')
-def get_by_id():
-    return "served by get by id"
+# find by eid
+@app.route('/employee/<int:eid>')
+def get_by_id(id):
+    foundEmployee = list(filter(lambda t:t["eid"]== id,employee))
+    if len(foundEmployee) == 0:
+        return jsonify({}), 204
+    return jsonify(foundEmployee[0])
+    #return "served by get by id"
 
+#create new employee
 @app.route('/employee', methods=['POST'])
 def create():
-   
+    #global nextId
     if not request.json:
         abort(400)
 ## change these
@@ -38,17 +58,17 @@ def create():
         "dcode": request.json["dcode"],
         "startdate": request.json["startdate"]
     }
-    return jsonify(EmployeesDAO.create(employee))
+    employee.append(employee)
+    return jsonify(employeeDAO.create(employee))
 
     return "served by Create "
 
-#update
+#update existing employee
 # curl -X PUT -d "{\"Title\":\"new Title\", \"Price\":999}" -H "content-type:application/json" http://127.0.0.1:5000/books/1
-
 
 @app.route('/employee/<int:eid>', methods=['PUT'])
 def update(eid):
-    foundEmployee=EmployeesDAO.findById(eid)
+    foundEmployee=employeeDAO.findById(eid)
     print (foundEmployee)
     if foundEmployee == {}:
         return jsonify({}), 404
@@ -63,17 +83,16 @@ def update(eid):
         currentEmployee['dcode'] = request.json['dcode']
     if 'startdate' in request.json:
         currentEmployee['startdate'] = request.json['startdate']
-    EmployeesDAO.update(currentEmployee)
+    employeeDAO.update(currentEmployee)
 
     return jsonify(currentEmployee)
 
-#delete
+#delete existing employee
 # curl -X DELETE http://127.0.0.1:5000/books/1
-
 
 @app.route('/employee/<int:eid>', methods=['DELETE'])
 def delete(eid):
-    EmployeesDAO.delete(eid)
+    employeeDAO.delete(eid)
 
     return jsonify({"done": True})
 

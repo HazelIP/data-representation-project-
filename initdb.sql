@@ -1,15 +1,15 @@
 use data_representation;
 
-create table employee(
-    -> eid int PRIMARY KEY,
-    -> firstn varchar(250),
-    -> lastn varchar(250),
+create table employees(
+    -> eid int NOT NULL PRIMARY KEY,
+    -> fname varchar(250),
+    -> lname varchar(250),
     -> gender enum ("M","F"),
-    -> dcode varchar(10),
-    -> startdate date(250),
-    );
+    -> dcode varchar(20),
+    -> startdate DATE
+    -> );
 
 create table dept(
-    -> dcode varchar(10) PRIMARY KEY,
-    -> name varchar(250),
-    );
+    -> dcode varchar(10) NOT NULL PRIMARY KEY,
+    -> dname varchar(250)
+    -> );

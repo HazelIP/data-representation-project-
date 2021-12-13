@@ -1,9 +1,15 @@
-from Employee_DAO import employeesDAO
+from Employee_DAO import employeeDAO
+# from the file import the instance
 
 employee = {
-    "id":1,
-    "name":john
+    "eid":1234,
+    "fname":"John",
+    "lname":"Doe",
+    "gender":"M",
+    "dcode":"101S",
+    "startdate":"2020-01-01"
 }
 
-returnvalue=employeesDAO.create(person)
-print(returnvalue)
+#EmployeesDAO.create(employee)
+returnValue=employeeDAO.create(employee)
+print(returnValue)
