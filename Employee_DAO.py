@@ -87,8 +87,9 @@ class EmployeesDAO:
         sql="delete from employees where eid = %s"
         values = [eid]
         cursor.execute(sql, values)
+        self.db.commit()
         return {}
 
+employeeDAO = EmployeesDAO()
 #one on the left not filename, but instance
 #one on the right is the class name 
-employeeDAO = EmployeesDAO()

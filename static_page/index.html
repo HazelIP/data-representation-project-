@@ -1,13 +1,19 @@
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+            body {
+              background-color: beige;
+            }
+        </style>
     </head>
     <body>
         <div id="create-update" style='display:none'>
-            <h2>Create edit</h2>
-            <table id="createUpdateForm">
+            <h2>Create a new employee</h2>
+            <table class="table table-hover" id="createUpdateForm">
                 <tr>
                     <td>EmployeeID</td>
                     <td><input type="text" name="eid" id="idInput"></td>
@@ -22,33 +28,43 @@
                 </tr>
                 <tr>
                     <td>Gender</td>
-                    <td><input type="text" name="gender"></td>
+                    <td><input type="radio" name="gender" value="M">Male
+                    <input type="radio" name="gender" value="F">Female</td>
                 </tr>
                 <tr>
                     <td>Department</td>
-                    <td><input type="text" name="dcode"></td>
+                    <td><input type="radio" name="dcode" value="101S"><b> Sales</b> (101S)
+                    <input type="radio" name="dcode" value="102D"><b> R&D</b> (102D)
+                    <input type="radio" name="dcode" value="103F"><b> Finance</b> (103F)
+                    <input type="radio" name="dcode" value="104H"><b> Human Resources</b> (104H)</td>
                 </tr>
                 <tr>
                     <td>Start date</td>
                     <td><input type="date" name="startdate"></td>
                 </tr>
-                    <td></td><td>                        
-                        <button id="create-button" onclick="doCreate()">Create</button>     
-                        <button id="update-button" onclick="doUpdate()">update</button>
+                    <td></td>
+                    <td>                        
+                        <button id="create-button" class="btn btn-success" onclick="doCreate()">Create</button>
+                        <button id="update-button" onclick="doUpdate()">Update</button>
                     </td>
                 </tr>
             </table>
+            <button id="back" class="btn btn-warning" onclick="goBack()">Go Back</button>     
         </div>
         <div id="display">
             <h2>Employees</h2>
-            <button onclick="showCreate()">Create</button>
-            <table id="employeeTable" class="table">
+            </br> 
+            <button class="btn btn-success" onclick="showCreate()">Create a new employee</button>
+            </br>
+            </br>
+            <table id="employeeTable" class="table table-hover">
                 <tr>
                     <th>EmployeeID</th><th>First Name</th><th>Last Name</th><th>Gender</th><th>Department</th><th>Start date</th>
                 </tr>
             </table>
         </div>
         <script>
+        
             function showCreate()
             //find the display div and hide it, show create-edit
             {
@@ -57,18 +73,14 @@
                 document.getElementById('create-button').style.display='block'
                 document.getElementById('create-update').style.display ='block'
             }
-
-            function showUpdate(thisElem)
+            function goBack()
             {
-                var rowElement = thisElem.parentNode.parentNode;
-                employee = readEmployeeFromRow(rowElement)
-                populateForm()
-
-                document.getElementById('display').style.display='none'
-                document.getElementById('update-button').style.display='block'
+                document.getElementById('display').style.display='block'
+                document.getElementById('update-button').style.display='none'
                 document.getElementById('create-button').style.display='none'
-                document.getElementById('create-update').style.display ='block'
+                document.getElementById('create-update').style.display ='none'
             }
+
             function readEmployeeFromRow(rowElement){
                 employee = {}
                 //get the employee to be updated by eid
@@ -90,8 +102,8 @@
 
                 form.querySelector('input[name="fname"]').value = employee.fname
                 form.querySelector('input[name="lname"]').value = employee.lname
-                form.querySelector('input[name="gender"]').value = employee.gender
-                form.querySelector('input[name="dcode"]').value = employee.dcode
+                form.querySelector('input[name="gender"]').checked.value = employee.gender
+                form.querySelector('input[name="dcode"]').checked.value = employee.dcode
                 form.querySelector('input[name="startdate"]').value = employee.startdate
             }
 
@@ -101,10 +113,13 @@
                 document.getElementById('display').style.display='block'
                 document.getElementById('create-edit').style.display ='none'
             }
+
             function doCreate(){
                 employee = getEmployeeFromForm()
-                //send data to DB
-                $.ajax({url:"/employee",
+                //send data to server
+                //for online hosting - host = window.location.origin
+                $.ajax({
+                url:"/employee", //host+"/employee"
                 data:JSON.stringify(employee),
                 method:"POST",
                 dataType:"JSON",
@@ -124,12 +139,16 @@
                 var tableElement = document.getElementById("employeeTable");
                 var rowElement = thisElem.parentNode.parentNode;
                 var index = rowElement.rowIndex;
+                //problem on the following line
                 eid = rowElement.getAttribute("eid");
+                console.log(eid)
                 //delete it from server if it's deleted from table
+                //for online hosting - host = window.location.origin
                 $.ajax({
-                    url:"/employee/"+eid,
+                    url:"/employee/"+eid, //for online hosting - host+"/employee/"+eid
                     method:"DELETE",
                     dataType:"JSON",
+                    contentType:"application/json; charset=utf-8",
                     success:function(result){
                         tableElement.deleteRow(index);
                     },
@@ -139,14 +158,26 @@
                 })
                 tableElement.deleteRow(index);
             }
+            
+            function showUpdate(thisElem)
+            {
+                var rowElement = thisElem.parentNode.parentNode;
+                employee = readEmployeeFromRow(rowElement)
+                populateForm(employee)
+
+                document.getElementById('display').style.display='none'
+                document.getElementById('update-button').style.display='block'
+                document.getElementById('create-button').style.display='none'
+                document.getElementById('create-update').style.display ='block'
+            }
             function getEmployeeFromForm(){
                 var form = document.getElementById("createUpdateForm")
                 var employee = {}
                 employee.eid = form.querySelector('input[name="eid"]').value
                 employee.fname = form.querySelector('input[name="fname"]').value
                 employee.lname = form.querySelector('input[name="lname"]').value
-                employee.gender = form.querySelector('input[name="gender"]').value
-                employee.dcode = form.querySelector('input[name="dcode"]').value
+                employee.gender = form.querySelector('input[name="gender"]').checked.value
+                employee.dcode = form.querySelector('input[name="dcode"]').checked.value
                 employee.startdate = form.querySelector('input[name="startdate"]').value
                 return employee
             }
@@ -156,12 +187,13 @@
             }
 
             function updateServer(employee){
+            //host = window.location.origin
                 $.ajax({
-                    url:"/employee/"+employee.eid,
+                    url:"/employee/" + employee.eid, //host+"/employee/"+employee.eid
                     data:JSON.stringify(employee),
                     method:"PUT",
                     dataType:"JSON",
-                    contentType:"application/json;charset=utf-8",
+                    contentType:"application/json; charset=utf-8",
                     success:function(result){
                         console.log(result)
                         updateTableRow(employee)
@@ -190,8 +222,8 @@
 
                 form.querySelector('input[name="fname"]').value = ""
                 form.querySelector('input[name="lname"]').value = ""
-                form.querySelector('input[name="gender"]').value = ""
-                form.querySelector('input[name="dcode"]').value = ""
+                form.querySelector('input[name="gender"]').checked.value = ""
+                form.querySelector('input[name="dcode"]').checked.value = ""
                 form.querySelector('input[name="startdate"]').value = ""
             }
 
@@ -199,8 +231,8 @@
             function populateTable(){
                 //Ajax call to get all employee
                 $.ajax({
-                    //a local host for now, hosting online will be another url
-                    url:'http://127.0.0.1:5000/employee',
+                //host = window.location.origin
+                    url:'http://127.0.0.1:5000/employee', //host+"/employee"
                     method:"GET",
                     dataType:'JSON',
                     success:function(results){
@@ -217,7 +249,7 @@
                 //console.log("working so far")
                 tableElem = document.getElementById("employeeTable")
                 rowElem = tableElem.insertRow(-1)
-                rowElem.setAttribute("id",employee.eid)
+                rowElem.setAttribute("eid",employee.eid)
                 cell1 = rowElem.insertCell(0)
                 cell1.innerHTML = employee.eid
                 cell2 = rowElem.insertCell(1)
@@ -231,9 +263,9 @@
                 cell6 = rowElem.insertCell(5)
                 cell6.innerHTML = employee.startdate
                 cell7 = rowElem.insertCell(6)
-                cell7.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
+                cell7.innerHTML = '<button class="btn btn-warning" onclick="showUpdate(this)">Update</button>'
                 cell8 = rowElem.insertCell(7)
-                cell8.innerHTML = '<button onclick="doDelete(this)">Delete</button>'
+                cell8.innerHTML = '<button class="btn btn-danger" onclick="doDelete(this)">Delete</button>'
             }
             populateTable()
         </script>

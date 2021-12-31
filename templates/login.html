@@ -1,0 +1,41 @@
+
+<html>
+    <head>
+        <title>Login</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+            body {
+              background-color: beige;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container"></div>
+            <h2><b>Log In</b></h2>    
+            <form action="" method="post">
+            <div class="form-group">    
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" value="abc@gmail.com">
+            </div>
+            <div class="form-group">
+                <label for="pwd">Password:</label>
+                <input type="password" class="form-control" id="pwd" value="123456">
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox"> Remember me</label>
+            </div>
+            <button type="submit" class="btn btn-default" onclick="toIndex()">Submit</button>
+            </form>
+        </div>
+
+        <script>
+            function toIndex(){
+                //redirect to index.html
+                window.location.href = "example.com"
+            }
+        </script> 
+    </body>
+</html>

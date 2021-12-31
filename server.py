@@ -1,30 +1,29 @@
 # This is the server linking to DAO
 
-from flask import Flask, json, jsonify,  request, redirect, url_for, abort, make_response
+from flask import Flask, json, jsonify,  request, redirect, url_for, abort, make_response, render_template
 from Employee_DAO import employeeDAO
 
 app = Flask(__name__,
             static_url_path='', 
-            static_folder='static_page')
+            static_folder='static_page',
+            )
 
 @app.route('/')
 # redirect to login at index
 def index():
-    #return redirect (url_for('login'))
-    return "Hello!"
+    return redirect (url_for('login'))
+    #return "hello"
 
 @app.route('/login')
 def login():
-    return "served by login"
-    abort(401)
-    #this_is_never_executed() #function not defined
+    return render_template("login.html")
 
 
 # CRUD - get all
 # curl http://127.0.0.1:5000/employee
 @app.route('/employee')
 def get_all():
-    return jsonify(employeeDAO.get_all()) #display the data, where's the data?
+    return jsonify(employeeDAO.get_all()) 
     #return "served by get all()"
 
 # find by eid
@@ -49,7 +48,6 @@ def create():
         "startdate": request.json["startdate"]
     }
     return jsonify(employeeDAO.create(employee))
-    # put in some catch error if eid not given?
 
 #update existing employee
 # curl -X PUT -d "{\"fname\":\"Mary\",\"lname\":\"Doe\",\"gender\":\"F\",\"dcode\":\"101S\"}" -H Content-Type:application/json http://127.0.0.1:5000/employee/1234
@@ -84,19 +82,3 @@ def delete(eid):
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if __name__ == '__main__' :
-    app.run(debug= True)
