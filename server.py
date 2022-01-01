@@ -1,6 +1,7 @@
 # This is the server linking to DAO
 
 from flask import Flask, json, jsonify,  request, redirect, url_for, abort, make_response, render_template
+from flask.helpers import flash
 from Employee_DAO import employeeDAO
 
 app = Flask(__name__,
@@ -14,10 +15,20 @@ def index():
     return redirect (url_for('login'))
     #return "hello"
 
-@app.route('/login')
+@app.route('/login', methods=['GET','POST'])
+# login page, redirect to view employee if credentials matched
 def login():
-    return render_template("login.html")
+    error = None
+    if request.method == 'POST':
+        if request.form['Username'] != 'abc@gmail.com' or request.form['Password'] != '123456':
+            flash ('Invalid Credentials. Try again and use the ones provided')
+        else:
+            return redirect (url_for('view'))
+    return render_template("login.html", error=error)
 
+@app.route('/view')
+def view():
+    return render_template("view.html")
 
 # CRUD - get all
 # curl http://127.0.0.1:5000/employee
@@ -31,7 +42,6 @@ def get_all():
 @app.route('/employee/<int:eid>')
 def find_by_id(eid):
     return jsonify(employeeDAO.findById(eid))
-# catch error if eid not found?
 
 #create new employee
 #curl -X POST -d "{\"eid\":\"1233\", \"fname\":\"Mary\",\"lname\":\"Doe\",\"gender\":\"F\",\"dcode\":\"101S\",\"startdate\":\"2020-01-01\"}" -H Content-Type:application/json http://127.0.0.1:5000/employee
