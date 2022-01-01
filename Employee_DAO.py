@@ -12,13 +12,12 @@ class EmployeesDAO:
         )
         #print("connected")
 
-#need to do auto increment for eid?
     def create(self, employee):
         cursor = self.db.cursor()
         #sql command
         sql = "insert into employees (eid, fname, lname, gender, dcode, startdate) values (%s,%s,%s,%s,%s,%s)"
         # input values as dict object
-        values = [ #look at studentDAO for auto increment
+        values = [ 
             employee['eid'],
             employee['fname'],
             employee['lname'],

@@ -1,4 +1,4 @@
-# This is the server linking to DAO
+# This is the server linking to DAO and html
 
 from flask import Flask, json, jsonify,  request, redirect, url_for, abort, make_response, render_template
 from flask.helpers import flash
