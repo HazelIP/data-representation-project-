@@ -117,9 +117,10 @@
             function doCreate(){
                 employee = getEmployeeFromForm()
                 //send data to server
-                //for online hosting - host = window.location.origin
+                //for online hosting - 
+                host = window.location.origin
                 $.ajax({
-                url:"/employee", //host+"/employee"
+                url:host+"/employee",
                 data:JSON.stringify(employee),
                 method:"POST",
                 dataType:"JSON",
@@ -139,13 +140,14 @@
                 var tableElement = document.getElementById("employeeTable");
                 var rowElement = thisElem.parentNode.parentNode;
                 var index = rowElement.rowIndex;
-                //problem on the following line
+            
                 eid = rowElement.getAttribute("eid");
                 console.log(eid)
                 //delete it from server if it's deleted from table
-                //for online hosting - host = window.location.origin
+                //for online hosting - 
+                host = window.location.origin
                 $.ajax({
-                    url:"/employee/"+eid, //for online hosting - host+"/employee/"+eid
+                    url:host+"/employee/"+eid, //for online hosting - host+"/employee/"+eid
                     method:"DELETE",
                     dataType:"JSON",
                     contentType:"application/json; charset=utf-8",
@@ -187,9 +189,9 @@
             }
 
             function updateServer(employee){
-            //host = window.location.origin
+            host = window.location.origin
                 $.ajax({
-                    url:"/employee/" + employee.eid, //host+"/employee/"+employee.eid
+                    url:host+"/employee/" + employee.eid, //host+"/employee/"+employee.eid
                     data:JSON.stringify(employee),
                     method:"PUT",
                     dataType:"JSON",
@@ -230,9 +232,9 @@
 
             function populateTable(){
                 //Ajax call to get all employee
+            host = window.location.origin
                 $.ajax({
-                //host = window.location.origin
-                    url:'http://127.0.0.1:5000/employee', //host+"/employee"
+                    url:host+"/employee",
                     method:"GET",
                     dataType:'JSON',
                     success:function(results){
