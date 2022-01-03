@@ -1,7 +1,7 @@
 # This is the server linking to DAO and html
 
-from flask import Flask, json, jsonify,  request, redirect, url_for, abort, make_response, render_template
-from flask.helpers import flash
+from logging import info
+from flask import Flask, json, jsonify,  request, redirect, url_for, abort, make_response, render_template, session
 from Employee_DAO import employeeDAO
 
 app = Flask(__name__,
@@ -9,25 +9,41 @@ app = Flask(__name__,
             static_folder='static_page',
             )
 
+app.secret_key = "data_rep"
+
 @app.route('/')
-# redirect to login at index
+# redirect to login if not logged in
 def index():
-    return redirect (url_for('login'))
-    #return "hello"
+    if not "Username" in session:
+        return redirect (url_for('login'))
+    
+    return redirect (url_for('view'))
 
 @app.route('/login', methods=['GET','POST'])
 # login page, redirect to view employee if credentials matched
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['Username'] != 'abc@gmail.com' or request.form['Password'] != '123456':
-            flash ('Invalid Credentials. Try again and use the ones provided')
+        session['username'] = request.form['Username']
+        session['password'] = request.form['Password']
+        # if credential not matched, give feedback and link to login again
+        if session['username'] != 'abc@gmail.com' or session['password'] != '123456':
+            return "Invalid Credentials. Use the ones provided <br><a href='/login'>" + "click here to try again</a>" 
         else:
             return redirect (url_for('view'))
     return render_template("login.html", error=error)
 
+@app.route('/logout')
+# clear the session and redirect to login again after logout button is clicked
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
 @app.route('/view')
 def view():
+    # cannot view unless logged in
+    if not 'username' in session:
+        abort(401)
     return render_template("view.html")
 
 # CRUD - get all

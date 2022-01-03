@@ -12,6 +12,7 @@
     </head>
     <body>
         <div id="create-update" style='display:none'>
+    <!--table for create new employee, hiden unless create new button is clicked-->
             <h2>Create a new employee</h2>
             <table class="table table-hover" id="createUpdateForm">
                 <tr>
@@ -62,6 +63,8 @@
                     <th>EmployeeID</th><th>First Name</th><th>Last Name</th><th>Gender</th><th>Department</th><th>Start date</th>
                 </tr>
             </table>
+            <!--click logout button to clear session and redirect to log in again-->
+            <button id="logout" class="btn btn-warning"><a href="{{ url_for('logout') }}">Logout</a></button>
         </div>
         <script>
         
@@ -74,6 +77,7 @@
                 document.getElementById('create-update').style.display ='block'
             }
             function goBack()
+            //go back to display in case user go to create by mistake
             {
                 document.getElementById('display').style.display='block'
                 document.getElementById('update-button').style.display='none'
